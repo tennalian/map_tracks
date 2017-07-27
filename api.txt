@@ -1,0 +1,20 @@
+GET http://gps.beforydeath.ru:8080/points/filter
+
+{
+	"id": "dump_sqlite_one_mt",
+	"time_from": "2017-07-14T00:00:00Z",
+	"time_to": "2017-07-14T23:59:59Z",
+	"limit": 0,
+	"filter": {
+		"extra": {
+			"distance_from": null,
+			"distance_to": null,
+			"second_from": null,
+			"second_to": null,
+			"speed_from": null,
+			"speed_to": null,
+			"acceleration_from": null,
+			"acceleration_to": null
+		}
+	}
+}
