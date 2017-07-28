@@ -40,6 +40,7 @@ const common = {
     new webpack.ProvidePlugin({
       'L': 'leaflet',
       'window.L': 'leaflet',
+      '$': 'jquery'
     }),
     new extractTextPlugin('[name].[hash].css'),
       new htmlWebpackPlugin({
