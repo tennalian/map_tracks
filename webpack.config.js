@@ -4,9 +4,10 @@ const webpack = require('webpack');
 const extractTextPlugin = require('extract-text-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const webpackCleanupPlugin = require('webpack-cleanup-plugin');
+const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const merge = require('webpack-merge');
 
-const rel = process.env.CONFIG == 'rel';
+const ENV = process.env.NODE_ENV || 'development';
 
 const common = {
   context: path.resolve(__dirname, 'src'),
@@ -17,71 +18,103 @@ const common = {
     publicPath: '/'
   },
 
+  resolve: {
+    extensions: ['.jsx', '.js', '.json', '.less'],
+    modules: [
+      'node_modules'
+    ],
+    alias: {
+      'react': 'preact-compat',
+      'react-dom': 'preact-compat'
+    }
+  },
+
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.less$/,
-        loader: extractTextPlugin.extract('style-loader', ['css-loader?importLoaders=1', 'postcss-loader', 'less-loader'])
-      },{
-          test: /.(jpe?g|gif|png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
-            loader: 'url-loader?limit=1000000&name=[name].[ext]'
-        },{
-          test: /\.js$/,
-          loader: 'babel?presets[]=es2015',
-          exclude: /node_modules/
-        },{
-          test: /\.html$/,
-          loader: 'raw'
-        }
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader?' + JSON.stringify({
+              presets: [
+                ['es2015', {'modules': false}]
+              ],
+              plugins: ['transform-react-jsx']
+            })
+          }
+        ]
+      },
+      {
+        test: /\.(less|css)$/,
+        exclude: /node_modules/,
+        use: extractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            { loader: 'css-loader?importLoaders=1' },
+            { loader: 'postcss-loader' },
+            { loader: 'less-loader' }
+          ]
+        })
+      },
+      {
+        test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif)(\?.*)?$/i,
+        use: [
+          { loader: 'url-loader' }
+        ]
+      }
     ]
   },
 
-  plugins: [
+
+  plugins: ([
+    new extractTextPlugin('[name].[hash].css'),
     new webpack.ProvidePlugin({
       'L': 'leaflet',
       'window.L': 'leaflet',
       '$': 'jquery'
     }),
-    new extractTextPlugin('[name].[hash].css'),
-      new htmlWebpackPlugin({
+    new htmlWebpackPlugin({
       template: 'index.ejs',
-      // favicon: './favicon.ico',
       baseUrl: '/',
       inject: true
+    }),
+    new ProgressBarPlugin({ clear: false }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(ENV)
     })
-  ],
+  ]).concat(ENV==='production' ? [
+    new webpack.NoErrorsPlugin(),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpackCleanupPlugin()
+  ] : []),
 
-  devServer: {
-    port: 5000,
-    contentBase: path.resolve(__dirname, 'dist'),
-    stats: 'minimal',
-    historyApiFallback: true,
-    hot: true
-  }
+  stats: { colors: true },
+
+  devtool: (ENV !=='production') ? 'source-map' : 'cheap-module-eval-source-map',
 };
 
-if (rel) {
-  console.log('Development environment disabled.');
-
-  module.exports = merge.smart(common, {
-    entry: {
-      index: ['./index.js']
-    },
-    plugins: [
-      new webpack.NoErrorsPlugin(),
-      new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.UglifyJsPlugin(),
-      new webpackCleanupPlugin()
-    ],
-    devtool: 'cheap-module-eval-source-map'
-  })
+if (ENV !== 'production') {
+  common.entry =  {
+    index: ['./index.js','webpack-dev-server/client?http://localhost:5000/']
+  };
+  common.devServer = {
+    port: 5000,
+    host: 'localhost',
+    contentBase: path.resolve(__dirname, 'dist'),
+    historyApiFallback: true,
+    open: false,
+    noInfo: true,
+    inline: true
+  };
+  common.plugins.push(
+    new webpack.HotModuleReplacementPlugin()
+  );
 } else {
-  console.log('Development environment enabled.');
-
-  module.exports = merge.smart(common, {
-    entry: {
-      index: ['./index.js','webpack-dev-server/client?http://localhost:5000/']
-    },
-    devtool: 'source-map'
-  })
+  common.entry =  {
+    index: ['index.js']
+  }
 }
+
+module.exports = common;
