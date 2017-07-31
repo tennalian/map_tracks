@@ -19,13 +19,11 @@ const common = {
   },
 
   resolve: {
-    extensions: ['.jsx', '.js', '.json', '.less'],
-    modules: [
-      'node_modules'
-    ],
+    extensions: ['.js'],
     alias: {
       'react': 'preact-compat',
-      'react-dom': 'preact-compat'
+      'react-dom': 'preact-compat',
+      'create-react-class': 'preact-compat/lib/create-react-class',
     }
   },
 
@@ -35,14 +33,7 @@ const common = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: [
-          {
-            loader: 'babel-loader?' + JSON.stringify({
-              presets: [
-                ['es2015', {'modules': false}]
-              ],
-              plugins: ['transform-react-jsx']
-            })
-          }
+          { loader: 'babel-loader'}
         ]
       },
       {
@@ -72,7 +63,8 @@ const common = {
     new webpack.ProvidePlugin({
       'L': 'leaflet',
       'window.L': 'leaflet',
-      '$': 'jquery'
+      '$': 'jquery',
+      '_': 'lodash'
     }),
     new htmlWebpackPlugin({
       template: 'index.ejs',
