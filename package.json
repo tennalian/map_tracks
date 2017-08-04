@@ -4,7 +4,8 @@
   "description": "Building tracks on map",
   "scripts": {
     "start": "webpack-dev-server --display-error-details",
-    "build": "webpack -p --progress"
+    "build": "webpack -p --progress",
+    "ghbuild": "webpack -p"
   },
   "dependencies": {
     "leaflet": "^1.1.0",

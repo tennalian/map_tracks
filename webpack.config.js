@@ -116,4 +116,8 @@ if (ENV !== 'production') {
   common.devtool = 'source-map';
 }
 
+if (TARGET === 'ghbuild') {
+  common.output.publicPath = '/dist'
+}
+
 module.exports = common;

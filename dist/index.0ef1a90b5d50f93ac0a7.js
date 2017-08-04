@@ -57,7 +57,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/";
+/******/ 	__webpack_require__.p = "/dist";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 123);
@@ -67818,4 +67818,4 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=index.04de1389710bd6828bb1.js.map
+//# sourceMappingURL=index.0ef1a90b5d50f93ac0a7.js.map
