@@ -10,8 +10,6 @@ const merge = require('webpack-merge');
 let TARGET = process.env.npm_lifecycle_event;
 const ENV = (TARGET === 'start') ? 'development' : 'production';
 
-__dirname = __dirname.charAt(0).toUpperCase() + __dirname.slice(1);
-
 const common = {
   context: path.resolve(__dirname, 'src'),
 
@@ -19,15 +17,6 @@ const common = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.[hash].js',
     publicPath: '/'
-  },
-
-  resolve: {
-    extensions: ['.js'],
-    alias: {
-      'react': 'preact-compat',
-      'react-dom': 'preact-compat',
-      'create-react-class': 'preact-compat/lib/create-react-class',
-    }
   },
 
   module: {
@@ -60,8 +49,7 @@ const common = {
       {
           test: /\.vue$/,
           loader: 'vue-loader',
-      },
-      // { test: /\.html$/, loader: 'vue-template-compiler' }
+      }
     ]
   },
 
@@ -93,7 +81,7 @@ if (ENV !== 'production') {
   common.devServer = {
     port: 5000,
     host: 'localhost',
-    contentBase: path.resolve(__dirname, 'dist'),
+    contentBase: path.resolve(__dirname, 'build'),
     historyApiFallback: true,
     open: false,
     noInfo: true,
@@ -105,7 +93,9 @@ if (ENV !== 'production') {
     new webpackCleanupPlugin()
   );
 } else {
-  common.entry = 'index.js';
+  common.entry = {
+    index: ['./index.js']
+  };
 }
 
 module.exports = common;

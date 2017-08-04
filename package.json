@@ -4,15 +4,11 @@
   "description": "Building tracks on map",
   "scripts": {
     "start": "webpack-dev-server --display-error-details",
-    "build": "webpack -p NODE_ENV production --progress"
+    "build": "webpack -p --progress"
   },
   "dependencies": {
     "leaflet": "^1.1.0",
-    "lodash": "^4.17.4",
-    "vue": "^2.4.2",
-    "vue-class-component": "^5.0.2",
-    "vue-loader": "^13.0.3",
-    "vue-template-compiler": "^2.4.2"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "autoprefixer": "^7.0.1",
@@ -39,7 +35,9 @@
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.9",
-    "vue-template-compiler-loader": "^1.0.4",
+    "vue": "^2.4.2",
+    "vue-loader": "^13.0.3",
+    "vue-template-compiler": "^2.4.2",
     "webpack": "^3.0.0-rc.2",
     "webpack-cleanup-plugin": "^0.4.1",
     "webpack-dev-server": "^1.16.5",
