@@ -22,13 +22,11 @@ const common = {
   },
 
   resolve: {
-    extensions: ['.jsx', '.js', '.json', '.less'],
-    modules: [
-      'node_modules'
-    ],
+    extensions: ['.js'],
     alias: {
       'react': 'preact-compat',
-      'react-dom': 'preact-compat'
+      'react-dom': 'preact-compat',
+      'create-react-class': 'preact-compat/lib/create-react-class',
     }
   },
 
@@ -38,14 +36,7 @@ const common = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: [
-          {
-            loader: 'babel-loader?' + JSON.stringify({
-              presets: [
-                ['es2015', {'modules': false}]
-              ],
-              plugins: ['transform-react-jsx']
-            })
-          }
+          { loader: 'babel-loader'}
         ]
       },
       {
@@ -65,7 +56,12 @@ const common = {
         use: [
           { loader: 'url-loader' }
         ]
-      }
+      },
+      {
+          test: /\.vue$/,
+          loader: 'vue-loader',
+      },
+      // { test: /\.html$/, loader: 'vue-template-compiler' }
     ]
   },
 
@@ -75,14 +71,14 @@ const common = {
     new webpack.ProvidePlugin({
       'L': 'leaflet',
       'window.L': 'leaflet',
-      '$': 'jquery'
+      '_': 'lodash'
     }),
     new htmlWebpackPlugin({
       template: 'index.ejs',
       baseUrl: '/',
       inject: true
     }),
-    new ProgressBarPlugin({ clear: false }),
+    new ProgressBarPlugin({ clear: false })
   ]),
 
   stats: { colors: true },
@@ -105,8 +101,7 @@ if (ENV !== 'production') {
   };
   common.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpackCleanupPlugin()
   );
 } else {
