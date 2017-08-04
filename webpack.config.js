@@ -16,7 +16,7 @@ const common = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'index.[hash].js',
-    publicPath: '/'
+    publicPath: './'
   },
 
   module: {
@@ -74,7 +74,7 @@ const common = {
     }),
     new htmlWebpackPlugin({
       template: 'index.ejs',
-      baseUrl: (TARGET === 'ghbuild') ? '/map_tracks' : '/',
+      baseUrl: (TARGET === 'ghbuild') ? '/map_tracks' : '',
       inject: true
     }),
     new webpack.DefinePlugin({
@@ -92,6 +92,7 @@ if (ENV !== 'production') {
   common.entry =  {
     index: ['./index.js','webpack-dev-server/client?http://localhost:5000/']
   };
+  common.output.publicPath = '/';
   common.devServer = {
     port: 5000,
     host: 'localhost',
