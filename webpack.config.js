@@ -22,14 +22,16 @@ const common = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.js$/,
         exclude: /node_modules/,
-        use: [
-          { loader: 'babel-loader'}
-        ]
-      },
-      {
-        test: /\.(less|css)$/,
+        use: [{
+          loader: 'babel-loader',
+          options: {
+            presets: ["es2015"]
+          }
+        }],
+      }, {
+        test: /\.less$/,
         exclude: /node_modules/,
         use: extractTextPlugin.extract({
           fallback: 'style-loader',
@@ -39,39 +41,49 @@ const common = {
             { loader: 'less-loader' }
           ]
         })
-      },
-      {
+      }, {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      }, {
         test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif)(\?.*)?$/i,
         use: [
           { loader: 'url-loader' }
         ]
-      },
-      {
+      }, {
           test: /\.vue$/,
           loader: 'vue-loader',
+          options: {
+            loaders: {
+              'css': 'vue-style-loader!css-loader'
+            }
+          }
       }
     ]
   },
 
-
   plugins: ([
+    new webpackCleanupPlugin(),
     new extractTextPlugin('[name].[hash].css'),
     new webpack.ProvidePlugin({
       'L': 'leaflet',
       'window.L': 'leaflet',
-      '_': 'lodash'
+      '_': 'lodash',
+      'moment': 'moment',
+      '$': 'jquery',
+      'window.jQuery': 'jquery'
     }),
     new htmlWebpackPlugin({
       template: 'index.ejs',
-      baseUrl: '/',
-      inject: true
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        ENV_NAME: JSON.stringify(ENV)
+      }
     }),
     new ProgressBarPlugin({ clear: false })
   ]),
 
-  stats: { colors: true },
-
-  devtool: (ENV !=='production') ? 'source-map' : 'cheap-module-eval-source-map',
+  stats: { colors: true }
 };
 
 if (ENV !== 'production') {
@@ -89,13 +101,19 @@ if (ENV !== 'production') {
   };
   common.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-    new webpackCleanupPlugin()
+    new webpack.NoEmitOnErrorsPlugin()
   );
+  common.devtool = 'cheap-module-eval-source-map';
 } else {
   common.entry = {
     index: ['./index.js']
   };
+  common.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {
+      warnings: false
+    }
+  }));
+  common.devtool = 'source-map';
 }
 
 module.exports = common;

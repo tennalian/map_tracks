@@ -1,4 +1,11 @@
 @import "../node_modules/leaflet/dist/leaflet.css";
+@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+
+@small-padding: 8px;
+@mid-padding: @small-padding * 2;
+@big-padding: @small-padding * 3;
+@large-padding: @small-padding * 4;
+@label: 30px;
 
 
 * {
@@ -16,19 +23,33 @@ body{
   background: white;
 }
 
+.md-button{margin: 0 !important;}
+
 #map{
   width: 100%;
   height: 100%;
   background: #eee;
 }
 
-.message{
+.filters{
   background: white;
-  padding: 24px;
+  padding: @big-padding @mid-padding;
   position: fixed;
   top: 20px;
   right: 20px;
   z-index: 9999;
   width: 300px;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.4);
+  .date{
+    display:flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0 0 @mid-padding;
+    span {width: @label;}
+  }
+  .actions{
+    display: flex;
+    justify-content: flex-end;
+    .md-button{margin-left: @mid-padding !important;}
+  }
 }
