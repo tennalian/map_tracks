@@ -7,7 +7,10 @@ const webpackCleanupPlugin = require('webpack-cleanup-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const merge = require('webpack-merge');
 
-const ENV = process.env.NODE_ENV || 'development';
+let TARGET = process.env.npm_lifecycle_event;
+const ENV = (TARGET === 'start') ? 'development' : 'production';
+
+__dirname = __dirname.charAt(0).toUpperCase() + __dirname.slice(1);
 
 const common = {
   context: path.resolve(__dirname, 'src'),
@@ -80,15 +83,7 @@ const common = {
       inject: true
     }),
     new ProgressBarPlugin({ clear: false }),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(ENV)
-    })
-  ]).concat(ENV==='production' ? [
-    new webpack.NoErrorsPlugin(),
-    new webpack.optimize.DedupePlugin(),
-    new webpack.optimize.UglifyJsPlugin(),
-    new webpackCleanupPlugin()
-  ] : []),
+  ]),
 
   stats: { colors: true },
 
@@ -109,12 +104,13 @@ if (ENV !== 'production') {
     inline: true
   };
   common.plugins.push(
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpackCleanupPlugin()
   );
 } else {
-  common.entry =  {
-    index: ['index.js']
-  }
+  common.entry = 'index.js';
 }
 
 module.exports = common;
