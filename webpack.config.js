@@ -74,6 +74,8 @@ const common = {
     }),
     new htmlWebpackPlugin({
       template: 'index.ejs',
+      baseUrl: (TARGET === 'ghbuild') ? '/dist' : '/',
+      inject: true
     }),
     new webpack.DefinePlugin({
       'process.env': {
@@ -117,7 +119,13 @@ if (ENV !== 'production') {
 }
 
 if (TARGET === 'ghbuild') {
-  common.output.publicPath = '/dist'
+  common.output.publicPath = '/dist';
+  common.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {
+      warnings: false
+    }
+  }));
 }
 
 module.exports = common;
+
