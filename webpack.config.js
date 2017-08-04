@@ -74,7 +74,7 @@ const common = {
     }),
     new htmlWebpackPlugin({
       template: 'index.ejs',
-      baseUrl: (TARGET === 'ghbuild') ? '/dist' : '/',
+      baseUrl: (TARGET === 'ghbuild') ? '/map_tracks' : '/',
       inject: true
     }),
     new webpack.DefinePlugin({
@@ -120,11 +120,6 @@ if (ENV !== 'production') {
 
 if (TARGET === 'ghbuild') {
   common.output.publicPath = '/map_tracks/dist';
-  common.plugins.push(new webpack.optimize.UglifyJsPlugin({
-    compress: {
-      warnings: false
-    }
-  }));
 }
 
 module.exports = common;
