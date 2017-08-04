@@ -119,7 +119,7 @@ if (ENV !== 'production') {
 }
 
 if (TARGET === 'ghbuild') {
-  common.output.publicPath = '/dist';
+  common.output.publicPath = '/map_tracks/dist';
   common.plugins.push(new webpack.optimize.UglifyJsPlugin({
     compress: {
       warnings: false
