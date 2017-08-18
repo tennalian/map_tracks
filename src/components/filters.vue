@@ -35,14 +35,14 @@
 
 <script>
   const API = {
-    track: 'http://gps1.beforydeath.ru:8080/points/filter',
+    track: 'http://gps1.beforydeath.ru:8080/track',
     users: 'http://gps.beforydeath.ru:8080/id'
   }
   export default {
     data () {
       return {
-        time_from: "2017-07-10 13:00:00",
-        time_to: "2017-07-10 14:00:00",
+        time_from: "2017-08-15 00:00:00",
+        time_to: "2017-08-31 23:59:59",
         id: null,
         users: [],
         dtConfig: {
@@ -79,8 +79,42 @@
         const params = {
           id: this.id,
           time_from: moment(this.time_from).format('YYYY-MM-DD HH:mm:ss'),
-          time_to: moment(this.time_to).format('YYYY-MM-DD HH:mm:ss')
+          time_to: moment(this.time_to).format('YYYY-MM-DD HH:mm:ss'),
+          filter: {
+            segment: {
+              min_points: 20,
+              min_accuracy: 25
+            },
+            extra: {
+              distance_from: null,
+              distance_to: null,
+              second_from: null,
+              second_to: null,
+              speed_from: null,
+              speed_to: 33,
+              acceleration_from: -2,
+              acceleration_to: 2,
+            }
+          }
         };
+
+          // "filter":{
+          //   "segment":{
+          //     "min_points":20,
+          //     "min_accuracy":25
+          //   },
+          //   "extra":{
+          //     "distance_from":null,
+          //     "distance_to":null,
+          //     "second_from":null,
+          //     "second_to":null,
+          //     "speed_from":null,
+          //     "speed_to":33,
+          //     "acceleration_from":-2,
+          //     "acceleration_to":2
+          //   }
+          // }
+
 
         const options = {
           method: 'POST',
@@ -92,12 +126,14 @@
         return fetch(API.track, options)
          .then((resp) => resp.json())
          .then(fetchData => {
-            console.log(fetchData.data.raw)
-            const points = _.chain(_.cloneDeep(fetchData.data.raw))
-             .reject(_.matches({lat: 0, lon: 0}))
-             .map(point => _.merge(point, {lng: point.lon}))
-             .value();
-            this.$root.map.drawPath(points);
+            console.log(fetchData)
+            if (!_.isEmpty(fetchData.data)) {
+              const points = _.chain(_.cloneDeep(fetchData.data.raw))
+                .reject(_.matches({lat: 0, lon: 0}))
+                .map(point => _.merge(point, {lng: point.lon}))
+                .value();
+              this.$root.map.drawPath(points);
+            }
          })
          .catch(err => console.log(err))
       },
