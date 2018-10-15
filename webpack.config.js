@@ -5,7 +5,7 @@ const extractTextPlugin = require('extract-text-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const webpackCleanupPlugin = require('webpack-cleanup-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
-const merge = require('webpack-merge');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 let TARGET = process.env.npm_lifecycle_event;
 const ENV = (TARGET === 'start') ? 'development' : 'production';
@@ -27,7 +27,7 @@ const common = {
         use: [{
           loader: 'babel-loader',
           options: {
-            presets: ["es2015"]
+            presets: [['env', { modules: false }]],
           }
         }],
       }, {
@@ -60,6 +60,7 @@ const common = {
       }
     ]
   },
+
 
   plugins: ([
     new webpackCleanupPlugin(),
@@ -104,18 +105,15 @@ if (ENV !== 'production') {
   };
   common.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new UglifyJSPlugin()
   );
   common.devtool = 'cheap-module-eval-source-map';
 } else {
   common.entry = {
     index: ['./index.js']
   };
-  common.plugins.push(new webpack.optimize.UglifyJsPlugin({
-    compress: {
-      warnings: false
-    }
-  }));
+  common.plugins.push(new UglifyJSPlugin());
   common.devtool = 'source-map';
 }
 
